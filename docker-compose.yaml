@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - '3003:3003'
+    depends_on:
+      - mongo
+    environment:
+      APP_NAME: BookStore
+      JWT_ACCESS_SECRET: secret
+      JWT_REFRESH_SECRET: secret
+      NODE_ENV: local
+      PORT: 3003
+      MONGO_URI: mongodb://root:example@mongo:27017/bookstore?authSource=admin
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
